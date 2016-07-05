@@ -110,3 +110,5 @@ This is probably the ideal solution for most of your code, considering that ther
 
 ###Including jQuery Before Other Libraries
 The code snippets above rely on jQuery being loaded after prorotype.js is loaded. If you include jQuery before other libraries, you may use `jQuery` when you do some work with jQuery, but the `$` will have the meaning defined in the other library. There is no need to relinquish the `$` alias by calling `jQuery.noConflict()`.
+
+    
