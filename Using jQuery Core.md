@@ -70,3 +70,22 @@ That said, there is one caveat: *by deafult, jQuery uses `$` as a shortcut for j
 When you put jQuery into no-conflict mode, you have the option of assigning a new variable name to replace the `$` alias.
 
     <!-- Putting jQuery into no-conflict mode. -->
+    <script src="prototype.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+    var $j = jQuery.noConflict();
+    // $j is now an alias to the jQuery function; creating the new alias is optional.
+    $j(document).ready(function(){
+        $j("div").hide();
+        });
+    
+    // The $ variable now has the prototype meaning, which is a shortcut for
+    // document.getElementById(). mainDiv below is a DOM element, not a jQuery object.
+    window.onload = function(){
+        var mainDiv = $("main");
+    }
+    </script>
+
+In the code above, the `$` will revert back to its meaning in original library. You'll still be able to use the full function name `jQuery` aswell as the new alias `$j` in the rest of your application. The new alias can be named anything you'd like:`jq`, `$J`, `awesomeQuery`, etc.
+
+Finally, if you don't want to define another alternative to the full `jQuery` function name (you really like)
