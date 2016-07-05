@@ -88,4 +88,25 @@ When you put jQuery into no-conflict mode, you have the option of assigning a ne
 
 In the code above, the `$` will revert back to its meaning in original library. You'll still be able to use the full function name `jQuery` aswell as the new alias `$j` in the rest of your application. The new alias can be named anything you'd like:`jq`, `$J`, `awesomeQuery`, etc.
 
-Finally, if you don't want to define another alternative to the full `jQuery` function name (you really like)
+Finally, if you don't want to define another alternative to the full `jQuery` function name (you really like to use `$` and don't care about using the other library's `$` method), then there's still another approach you might try: simply add the `$` as an argument passed to your `jQuery(document).ready()` function. This is most frequently used in the case where you still want the benefits of really concise jQuery code, but don't want to cause conflicts with other libraries.
+
+    <!-- Another way to put jQuery into no-conflict mode. -->
+    <script src="prototype.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+    jQuery.noConflict();
+    jQuery(document).ready(function($){
+        //You can use the locally-scoped $ in here as an alias to jQuery.
+        $("div").hide();
+        });
+
+    //The $ variable in the global scope has the prototype.js meaning.
+    window.onload = function(){
+        var mainDiv = $("main");
+    }
+    </script>
+
+This is probably the ideal solution for most of your code, considering that there'll be less code that you'll have to change in order to achieve conplete compatibility.
+
+###Including jQuery Before Other Libraries
+The code snippets above rely on jQuery being loaded after prorotype.js is loaded. If you include jQuery before other libraries, you may use `jQuery` when you do some work with jQuery, but the `$` will have the meaning defined in the other library. There is no need to relinquish the `$` alias by calling `jQuery.noConflict()`.
