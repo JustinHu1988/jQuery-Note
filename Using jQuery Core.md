@@ -111,4 +111,241 @@ This is probably the ideal solution for most of your code, considering that ther
 ###Including jQuery Before Other Libraries
 The code snippets above rely on jQuery being loaded after prorotype.js is loaded. If you include jQuery before other libraries, you may use `jQuery` when you do some work with jQuery, but the `$` will have the meaning defined in the other library. There is no need to relinquish the `$` alias by calling `jQuery.noConflict()`.
 
+    <!-- loading jQuery before other libraries. -->
+    <script src="jquery.js"></script>
+    <script src="prototype.js"></script>
+    <script>
+    //Use full jQuery function name to reference jQuery.
+    jQuery(document).ready(function(){
+        jQuery("div").hide();
+        });
+    //Use the $ variable as defined in prototype.js
+    window.onload = function(){
+        var mainDiv = $("main");
+    };
+    </script>
+
+### Summary of Ways to Reference the jQuery Function
+Here's a recap of ways you can reference the jQuery function when the presence of another library creates a conflict over the use of the `$` variable.
+
+#### Create a New Alias
+The `jQuery.noConflict()` method returns a reference to the jQuery function, so you can capture it in whatever variable you'd like:
+
+    <script src="prototype.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+    //Give $ back to prototype.js; create new alias to jQuery.
+    var $jq = jQuery.noConflict();
+    </script>
+
+####Use an Immediately Invoked Function Expression
+You can continue to use the standard `$` by wrapping your code in an immediately invoked function expression; this is also a standard pattern for jQuery plugin authoring, where the author cannot know whether another library will have taken over the `$`. See the Plugins section for more information about writing plugins.
+
+    <!-- Using the $ inside an immediately-invoked function expression. -->
+    <script src="prototype.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+    jQuery.noConflict();
+    (function($){
+        //Your jQuery code here, using the $
+        })(jQuery);
+    </script>
+
+Note that if you use this technique, you will not be able to use prototype.js methods inside the immediately invoked function. `$` will be a reference to jQuery, not prototype.js.
+
+####Use the Argument That's Passed to the `jQuery(document).ready()` Function
+
+    <script src="jquery.js"></script>
+    <script src="prototype.js"></script>
+    <script>
+    jQuery(document).ready(function($){
+        //Your jQuery code here, using $ to refer to jQuery.
+        });
+    </script>
+
+Or using the more concise syntax for the DOM ready function:
     
+    <script src="jquery.js"></script>
+    <script src="prototype.js"></script>
+    <script>
+    jQuery(function($){
+        //Your jQuery code here, using the $
+        });
+    </script>
+
+
+##Attributes
+
+An element's attributes can contain useful information for your application, so it's important to be able to get and set them.
+
+###The `.attr()` method
+The `.attr()` method acts as both a getter and a setter. As a setter, `.attr()` can accept either a key and a value, or an object containing one or more key/value, or an object containing one or more key/value pairs.
+
+`.attr()` as a setter:
+
+    $("a").attr("href","allMyHrefsAreTheSameNow.html");
+    $("a").attr({
+        title:"all titles are the same too!",
+        href:"somethingNew.html"
+        });
+
+`.attr()` as a getter:
+
+    $("a").attr("href"); //Returns the href for the first a element in the document
+
+
+##Selecting Elements
+The most basic concept of jQuery is to "select some elements and do something with them". jQuery supports most CSS3 selectors, as well as some non-standard selectors. For a complete selector reference, visit the "Selectors documentation on api.jquery.com".
+
+###Selecting Elements by ID
+
+    $("#myId");  //Note IDs must be unique per page.
+
+###Selecting Elements by Class Name
+
+    $(".myClass");
+
+###Selecting Elements by Attribute
+
+    $("input[name='first_name']");
+
+###Selecting Elements by Compound CSS Selector
+
+    $("#contents ul.people li");
+
+###Selecting Elements with a Comma-separated List of Selectors
+
+    $("div.myClass, ul.people");
+
+###Pseudo-Selectors
+
+    $("a.external:first");
+    $("tr:odd");
+
+    //Selector all input-like elements in a form (more on this below).
+    $("#myForm :input");
+    $("div:visible");
+    //All except the first three divs.
+    $("div:gt(2)");
+    //All currently animated divs.
+    $("div:animated");
+
+**Note:** When using the `:visible` and `:hidden` pseudo-selectors, jQuery tests the actual visibility of the element, not its CSS `visibility` or `display` properties. jQuery looks to see if the element's physical height and width on the page are both greater than zero.
+
+However, this test doesn't work with `<tr>` elements. In the case of `<tr>` jQuery does check the CSS `display` property, and considers an element hidden if its `display` property is set to `none`.
+
+Elements that have not been added to the DOM will always be considered hidden, even if the CSS that would affect them would render them visible. See the **Manipulating Elements** section to learn how to create and add elements to the DOM.
+
+
+###Choosing Selectors
+Choosing good selectors is one way to improve JavaScript's performance. Too much specificity can be a bad thing. A selector such as `#myTable thead tr th.special` is overkill if a selector such as `#myTable th.special` will get the job done.
+
+####Does My Selection Contain Any Elements?
+Once you're made a selection, you'll often want to know whether you have anything to work with. A common mistake is to use:
+
+    //Doesn't work!
+    if ($("div.foo")){
+        ...
+    }
+
+This won't work. When a selection is made using `$()`, an object is always returned, and objects always evaluate to `true`. Even if the selection doesn't contain any elements, the code inside the `if` statement will still run.
+
+The best way to determine if there are any elements is to test the selection't `.length` property, which tells you how many elements were selected. If the answer is 0, the `.length` property will evaluate to `false` when used as a boolean value：
+
+    //Testing whether a selection contains elements.
+    if ($("div.foo").length){
+        ...
+    }
+
+####Saving Selections
+jQuery doesn't cache elements for you. If you've made a selection that you might need to make again, you should save the selection in a variable rather than making the selection repeatedly.
+
+    var divs = $("div");
+
+Once the selection is stored in a variable, you can call jQuery methods on the variable just like you would have called them on the original selection.
+
+A selection only fetches the elements that are on the page at the time the selection is made. If elements are added to the page later, you'll have to repeat the selection or otherwise add them to the selection stored in the variable. Stored selections don't magically update when the DOM changes.
+
+####Refining & Filtering Selections
+Sometimes the selection contains more than what you're after. jQuery offers several methods for refining and filtering selections.
+
+    //Refining selections.
+    $("div.foo").has("p");          //div.foo elements that contain <p> tags
+    $("h1").not(".bar");            //h1 elements that don't have a class of bar
+    $("ul li").filter(".current");  //unordered list items with class of current
+    $("ul li").first();                  //just the first unordered list items
+    $("ul li").eq(5);                  // the sixth
+
+####Selecting Form Elements
+jQuery offers several pseudo-selectors that help find elements in forms. These are especially helpful because it can be difficult to distinguish between form elements based on their state or type using standard CSS selectors.
+
+**:checked**
+
+Not to be confused with *:checkbox*, `:checked` targets *checked* checkboxes, but keep in mind that whis selector works also for *checked* radio buttons, and `<select>` elements (for `<select>` elements only, use the `:selected` selector):
+
+    $("form :checked");
+
+The `:checked` pseudo-selector works when used with *checkboxes*, *radio buttons* and *selects*.
+
+**:disabled**
+
+Using the `:disabled` pseudo-selector targets any `<input>` elements with the `disabled` attribute:
+    
+    $("form :disabled");
+
+In order to get the best performance using `:disabled`, first select elements with a standard jQuery selector, then use `.filter(":disabled")`, or precede the pseudo-selector with a tag name or some other selector.
+
+**:enabled**
+
+Basically the inverse of the `:disabled` pseudo-selector, the `:enabled` pseudo-selector targets any elements that do not have a `disabled` attribute:
+
+    $("form :enabled");
+
+In order to get the best performance using `:enabled`, first select elements with a standrad jQuery selector, then use `.filter(":enabled")`, or precede the pseudo-selector with a tag name or some other selector.
+
+**:input**
+Using the `:input` selector selects all `<input>`, `<textarea>`, `<select>`, and `<button>` elements:
+    
+    $("form :input");
+
+**:selected**
+Using the `:selected` pseudo-selector targets any selected items in `<option>` elements:
+
+    $("form :selected");
+
+In order to get the best performance using `:selected`, first select elements with a standard jQuery selector, then use `.filter(":selected")`, or precede the pseudo-selector with a tag name or some other selector.
+
+**Selecting by type**
+jQuery provides pseudo selectors to select form-specific elements according to their type:
+    :password
+    :reset
+    :radio
+    :text
+    :submit
+    :checkbox
+    :botton
+    :image
+    :file
+
+
+##Working with Selections
+
+####Getters & Setters
+Some jQuery methods can be used to either assign or read some value on a selection. When the method is called with a value as an argument, it's referred to as a setter because it sets (or assigns) that value. When the method is called with no argument, it gets (or reads) the value of the element. Setters affects all elements in a selection, with the exception of `.text()`, which retrieves the values of all the elements.
+
+    //The .html() method sets all the h1 elements' html to be "hello world":
+    $("h1").html("hello world");
+
+    //The .html() method returns the html of the first h1 element:
+    $("h1").html();
+    // >"hello world"
+
+Setter return a jQuery object, allowing you to continue calling jQuery methods on your selection. Getters return whatever they were asked to get, so you can't continue to call jQuery methods on the value returned bu the getter.
+
+    //Attempting to call a jQuery method after calling a getter.
+    //This will NOT work:
+    $("h1").html().addClass("test");
+
+####Chaining
+
+
