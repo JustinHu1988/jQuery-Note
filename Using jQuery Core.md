@@ -348,4 +348,80 @@ Setter return a jQuery object, allowing you to continue calling jQuery methods o
 
 ####Chaining
 
+If you call a method on a selection and that method returns a jQuery object, you can continue to call jQuery methods on the object without pausing for a semicolon. This practice is referred to as "chaining":
 
+    $("#content").find("h3").eq(2).html("new text for the third h3!");
+
+It may help code readability to break the chain over several lines:
+
+    $("#content")
+        .find("h3")
+        .eq(2)
+        .html("new text for the third h3!");
+
+jQuery also provides the `.end()` method to get back to the original selection should you change the selection in the middle of a chain:
+
+    $("#content")
+        .find("h3")
+        .eq(2)
+            .html("new text for the third h3!")
+            .end() //Restores the selection to all h3s in #content
+        .eq(0)
+            .html("new text for the first h3!");
+
+Chaining is extraordinarily powerful, and it's a feature that many libraries have adapted since it was made popular by jQuery. However, it must be used with care - extensive chaining can make code extremely difficult to modify or debug. There is no hard-and-fast rule to how long a chain should be - just know that it's easy to get carried away.
+
+
+##Manipulating Elements
+
+For complete documentation of jQuery manipulation methods, visit the **Manipulation documentation on api.jquery.com**.
+
+###Getting and Setting Information About Elements
+There are many ways to change an existing element. Among the most common tasks is changing the inner HTML or attribute of an element. jQuery offers simple, cross-browser methods for these sorts of manipulations. You can also get information about elements using many of the same methods in their getter incarnations. For more information on getters and setters, see the **Working with Selections** section. Here are a few methods you can use to get and set information about elements:
+
+1. `.html()` -- Get or set the HTML contents.
+2. `.text()` -- Get or set the text contents; HTML will be stripped.
+3. `.attr()` -- Get or set the value of the provided attribute.
+4. `.width()` -- Get or set the width in pixels of the first elements in the selection as an integer.
+5. `.height()` -- Get or set the height in pixels fo the first element in the selection as an integer.
+6. `.position()` -- Get an object with position information for the first element in the selection, relative to its first positioned ancestor.(This is a getter only)
+7. `.val()` -- Get or set the value of form elements.
+
+Changing things about elements is trivial, but remember that the change will affect all elements in the selection. If you just want to change one element, be sure to specify that in the selection before calling a setter method.
+
+    // Changing the HTML of an element.
+    $("#myDiv p:first").html("New <strong>first</strong> paragraph!");
+
+
+###Moving, Copying, and Removing Elements
+While there are a variety of ways to move elements around the DOM, there are generally two approaches:
+    
+1. Place the selected element(s) relative to another element.
+2. Place an element relative to the selected element(s).
+
+For example, jQuery provides `.insertAfter()` and `.after()`. The `.insertAfter()` method places the selected element(s) after the element provided as an argument. The `.after()` method places the element provided as an argument after the selected element. Several other methods follow this pattern: `.insertBefore()` and `.before()`, `.appendTo()` and `.append()`, and `.prependTo()` and `.prepend()`.
+
+The method that makes the most sense will depend on what elements are selected, and whether you need to store a reference to the elements you're adding to the page. If you need to store a reference, you will always want to take the first approach -- placing the selected elements relative to another element -- as it returns the element(s) you're placing. In this case, `.insertAfter()`, `.insertBefore()`, `appendTo()`, and `.prependTo()` should be the tools of choice.
+
+    //Moving elements using different approaches.
+
+    //Make the first list item the last list item:
+    var li = $("#myList li:first").appendTo("#myList");
+
+    //Another approach to the same problem:
+    $("#myList").append($("#myList li:first"));
+    //Note that there's no way to access the list item that we moved, as this returns the list itself.
+
+
+###Cloning Elements
+Methods such as `.appendTo()` move the element, but sometimes a copy of the element is needed instead. In this case, use `.clone()` first:
+
+    //Making a copy of an element.
+    //Copy the first list item to the end of the list:
+    $("#myList li:first").clone().appendTo("#myList");
+
+If you need to copy related data and events, be sure to pass `true` as an argument to `.clone()`.
+
+
+###Removing Elements
+There are two ways to remove elements from the page: `.remove()` and `.detach()`. Use
