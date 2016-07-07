@@ -424,4 +424,43 @@ If you need to copy related data and events, be sure to pass `true` as an argume
 
 
 ###Removing Elements
-There are two ways to remove elements from the page: `.remove()` and `.detach()`. Use
+There are two ways to remove elements from the page: `.remove()` and `.detach()`. Use `.remove()` when you want to permanently remove the selection from the page. While `.remove()` does return the removed element(s), those elements will not have their associated data and events attached to them if you return them to the page.
+
+Use `.detach()` if you need the data and events to persist. Like `.remove()`, it returns the selection, but it also maintains the data and events associated with the selection, so you can restore the selection to the page at a later time.
+
+The `.detach()` method is extremely valuable if you are doing heavy manipulation on an element. In that case, it's beneficial to `.detach()` the element from the page, work on it in your code, then restore it to the page when you're done. This limits expensive "DOM touches" while maintaing the element's data and events.
+
+If you want to leave the element on the page but remove its contents, you can use `.empty()` to dispose of the element's inner HTML.
+
+
+###Creating New Elements
+jQuery offers a trivial and elegant way to create new elements using the same `$()` method used to make selections:
+
+    //Creating new elements from an HTML string.
+    $("<p>This is a new paragraph</p>");
+    $("<li class=\"new\">new list item</li>");
+
+    //Creating a new element with an attribute object.
+    $("<a/>",{
+        html:"This is a <strong>new</strong> link",
+        "class":"new",
+        href:"foo.html"
+        });
+
+Note that the attributes object in the second argument above, the property name class is quoted, although the property names `html` and `href` are not. Property names generally do not need to be quoted unless they are **reserved words**(as `class` is in this case).
+
+When you create a new element, it is not immdiately added to the page. There are several ways to add an element to the page once it's been created.
+
+    //Getting a new element on to the page.
+    var myNewElement = $("<p>New element</p>");
+    myNewElement.appendTo("#content");
+    myNewElement.insertAfter("ul:last"); //This will remove the p from #content!
+    $("ul").last().after(myNewElement.clone()); //Clone the p so now we have two.
+
+The created element doesn't need to be stored in a variable - you can call the method to add the element to the page directly after the `$()`. However, most of the time you'll want a reference to the element you added so you won't have to select it later.
+
+You can also create an element as you're adding it to the page, but note that in this case you don't get a reference to the newly created element:
+
+    //Creating and adding an element to the page at the same time.
+    $("ul").append("<li>list item</li>");
+    
