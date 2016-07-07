@@ -463,4 +463,5 @@ You can also create an element as you're adding it to the page, but note that in
 
     //Creating and adding an element to the page at the same time.
     $("ul").append("<li>list item</li>");
-    
+
+The syntax for adding new elements to the page is easy, so it's tempting to forget that there's a huge performance cost for adding to the DOM repeatedly. If you're adding many elements to the same container, you'll want to concatenate all the HTML into a single string, and then append that string to the container instead of appending the element's one at a time.
