@@ -464,4 +464,143 @@ You can also create an element as you're adding it to the page, but note that in
     //Creating and adding an element to the page at the same time.
     $("ul").append("<li>list item</li>");
 
-The syntax for adding new elements to the page is easy, so it's tempting to forget that there's a huge performance cost for adding to the DOM repeatedly. If you're adding many elements to the same container, you'll want to concatenate all the HTML into a single string, and then append that string to the container instead of appending the element's one at a time.
+The syntax for adding new elements to the page is easy, so it's tempting to forget that there's a huge performance cost for adding to the DOM repeatedly. If you're adding many elements to the same container, you'll want to concatenate all the HTML into a single string, and then append that string to the container instead of appending the element's one at a time. Use an array to gather all the pieces together, then join them into a single for appending:
+
+    var myItems = [];
+    var myList = $("#myList");
+    for(var i=0; i<100; i++){
+        myItems.push("<li>item " + i + "</li>");
+    }
+    myList.append(myItems.join(""));
+
+###Manipulating Attributes
+jQuery's attribute manipulation capabilities are extensive. Basic changes are simple, but the `.attr()` method also allows for more complex manipulations. It can either set an explicit value, or set a value using the return value of a function. When the function syntax is used, the function receives two arguments: the zero-based index of the element whose attribute is being changed, and the current value of the attribute being changed.
+
+    //Manipulating a single attribute.
+    $("#myDiv a:first").attr("href","newDestination.html");
+
+    //Manipulating mulitple attributes.
+    $("#myDiv a:first").attr({
+        href:"nerDestination.html",
+        rel:"nofollow"
+        });
+
+    //Using a function to determine an attribute's new value.
+    $("#myDiv a:first").attr({
+        rel:"nofollow",
+        href: function(idx,href){
+            return "/new/" + href;
+        }
+    });
+    $("#myDiv a:first").attr("href", function(idx,href){
+        return "/new/" + href;
+    });
+
+
+
+##The jQuery Object
+When creating new elements (or selecting existing ones), jQuery returns the elements in a collection. Many developers new to jQuery assume that this collection is an array. It has a zero-indexed sequence of DOM elements, some familiar array functions, and a `.length` property, after all. Actually, the jQuery object is more complicated than that.
+
+DOM and DOM Elements
+The Document Object Model(DOM for short) is a representation of an HTML document. It may contain any number of DOM elements. At a high level, a DOM element can be thought of as "piece" of a web page. It may contain text and/or other DOM elements. DOM elements are described by a type, such as `<div>`, `<a>`, or `<p>`, and any number of attributes such as `src`, `href`, `class` and so on. For a more thorough description, refer to **the official DOM specification from the W3C**.
+
+Elements have properties like any JavaScript object. Among these properties are attributes like `.tagName` and methods like `.appendChild()`. These properties are the only way to interact with the web page via JavaScript.
+
+###The jQuery Object
+It turns out that working directly with DOM elements can be awkward. The jQuery object defines many methods to smooth out the experience for developers. Some benefits of the jQuery Object include:
+
+**Compatibility** -- The implementation of element methods varies across browser vendors and versions. The following snippet attempts to set the inner HTML of a `<tr>` element stored in `target`:
+
+    var target = document.getElementById("target");
+    target.innerHTML = "<td>Hello <b>World</b>!</td>";
+
+This works in many cases, but it will fail in most versions of Internet Explorer. In that case, the recommended approach(http://quirksmode.org/dom/html/) is to use pure DOM methods instead. By wrapping the `target` element in a jQuery object, these edge cases are taken care of, and the expected result is achieved in all supported browsers:
+
+    //Setting the inner HTML with jQuery.
+    var target = document.getElementById("target");
+    $(target).html("<td>Hello <b>World</b>!</td>")
+
+**Convenience** -- There are also a lot of common DOM manipulation use cases that are awkward to accomplish with pure DOM methods. For instance, inserting an element stored in `newElement` after the target element requires a rather verbose DOM method:
+
+    // Inserting a new element after another with the native DOM API.
+    var target = document.getElementById("target");
+    var newElement = document.createElement("div");
+    target.parentNode.insertBefore(newElement, target.nextSibling);
+
+By wrapping the `target` element in a jQuery object, the same task becomes much simpler:
+
+    //Inserting a new element after another with jQuery.
+    var target = document.getElementById("target");
+    var newElement = document.createElement("div");
+    $(target).after(newElement);
+
+For the most part, these details are simply "gotchas" standing between you and your goals.
+
+
+####Getting Elements Into the jQuery Object
+When the jQuery function is invoked with a CSS selector, it will return a jQuery object wrapping any element(s) that match this selector. For instance, writing:
+
+    //Selecting all <h1> tags.
+    var headings = $("h1");
+
+`headings` is now a jQuery element containing all the `<h1>` tags already on the page. This can be verified by inspecting the `.length` property of `headings`:
+
+    //Viewing the number of <h1> tags on the page.
+    var headings = $("h1");
+    alert(headings.length);
+
+If the page had more than one `<h1>` tag, this number will be greater than one. If the page has no `<h1>` tags, the `.length` property will be zero. Checking the `.length` property is a common way to ensure that the selector successfully matched on or more elements.
+
+If the goal is to select only the first heading element, another step is required. There are a number of ways to accomplish this, but the most straight-forward is the `.eq()` function.
+
+    //Selecting only the first <h1> element on the page(in a jQuery object)
+    var headings = $("h1");
+    var firstHeading = headings.eq(0);
+
+Now firstHeading is a jQuery object containing only the first `<h1>` element on the page. And because `firstHeading` is a jQuery object, it has useful methods like `.html()` and `.after()`. jQuery also has a method named `.get()` which provides a related function. Instead of returning a jQuery-wrapped DOM element, it returns the DOM element itself.
+
+    //Selecting only the first <h1> element on the page.
+    var firstHeadingElem = $("h1").get(0);
+
+Alternatively, because the jQuery object is "array-like", it supports array subscripting via brackets:
+
+    //Selecting only the first <h1> element on the page (alternate approach).
+    var firstHeadingElem = $("h1")[0];
+
+In either case(`get()` or `[]`), `firstHeadingElem` contains the native DOM element. This means it has DOM properties like `.innerHTML` and methods like `.appendChild()`, but not jQuery methods like `.html()` or `.after()`. The `firstHeadingElem` element is more difficult to work with, but there are certain instances that require it. One such instance is making comparisons.
+
+####Not All jQuery Objects are Created `===`
+An important detail regarding this "wrapping" behavior is that each wrapped object is unique. This is true **even if the object was created with the same selector or contain references to the exact same DOM elements**.
+
+    //Creating two jQuery objects for the same element.
+    var logo1 = $("#logo");
+    var logo2 = $("#logo");
+
+Although `logo1` and `logo2` are created in the same way (and wrap the same DOM element), they are not the same object. For example:
+
+    //Comparing jQuery objects.
+    alert($("#logo") === $("#logo")); //alert "false"
+
+However, both objects contain the same DOM element. The `.get()` method is useful for testing if two jQuery objects have the same DOM element.
+
+    // Comparing DOM elements.
+    var logo1 = $("#logo");
+    var logo1Elem = logo1.get(0);
+
+    var logo2 = $("#logo");
+    var logo2Elem = logo2.get(0);
+    alert(logo1Elem === logo2Elem); //alerts "true"
+
+Many developers prefix a `$` to the name of variables that contain jQuery objects in order to help differentiate. There is nothing magic about this pracitice -- it just helps some people keep track of what different variables contain. The previous example could be re-written to follow this convention:
+
+    //Comparing DOM elements (with more readable variable names).
+    var $logo1 = $("#logo");
+    var logo1 = $logo1.get(0);
+
+    var $logo2 = $("#logo");
+    var logo2 = $logo2.get(0);
+
+    alert(logo1 === logo2);  //alerts "true"
+
+
+ 
