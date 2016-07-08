@@ -602,5 +602,11 @@ Many developers prefix a `$` to the name of variables that contain jQuery object
 
     alert(logo1 === logo2);  //alerts "true"
 
+This code functions identically to the example above, but it is a little more clear to read.
 
+Regardless of the naming convertion used, it is very important to make the distinction between jQuery object and native DOM elements. Native DOM methods and properties are not present on the jQuery object, and vice versa.
+Error messages like "event.target.closest is not a function" and "TypeError: Object [object Object]" has no method "setAttribute" indicate the presence of this common mistake. 
+
+####jQuery Objects Are Not "Live"
+Given a jQuery object with all the paragraph elements on the page:
  
