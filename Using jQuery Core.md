@@ -609,4 +609,41 @@ Error messages like "event.target.closest is not a function" and "TypeError: Obj
 
 ####jQuery Objects Are Not "Live"
 Given a jQuery object with all the paragraph elements on the page:
+
+    //Selecting all <p> elements on the page.
+    var allParagraphs = $("p");
+
+...one might expect that the contents will grow and shrink over time as `<p>` elements are added and removed from the document. jQuery objects do **not** behave in this manner. The set of elements contained within a jQuery object will not change unless explicitly modified. This means that the collection is not "live" -- it does not automatically update as te document changes. If the document may have changed since the creation the jQuery object, the collection should be updated by creating a new one. It can be as easy as rerunning the same selector:
+    
+    //Updating the selection.
+    allParagraphs = $("p");
+
+####Wrapping Up
+
+Although DOM elements provide all the functionality one needs to create interactive web pages, they can be a hassle to work with. The jQuery object wraps these elements to smooth out this experience and make common tasks easy. When creating or selecting elements with jQuery, the result will always be wrapped in a new jQuery object. If the situation calls for the native DOM elements, they may be accessed through the `.get()` method and/or array-style subscripting.
+
+
+##Traversing
+Once you've made an initial selection with jQuery, you can traverse deeper into what was just selected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
