@@ -624,9 +624,41 @@ Although DOM elements provide all the functionality one needs to create interact
 
 
 ##Traversing
-Once you've made an initial selection with jQuery, you can traverse deeper into what was just selected.
+Once you've made an initial selection with jQuery, you can traverse deeper into what was just selected. Traversing can be broken down into three basic parts: parents, children, and siblings.
+jQuery has an abundance of easy-to-use methods for all these parts. Notice that each of these methods can optionally be passed string selectors, and some can also take another jQuery object in order to filter your selection down. Pay attention and refer to the **API documentation on traversing** to know what variation of arguments you have available.
 
+###Parents
+The methods for finding the parents from a selection include `.parent()`, `.parents()`, `.parentsUntil()`, and `.closest()`.
 
+    <div class="grandparent">
+        <div class="parent">
+            <div class="child">
+                <span class="subchild"></span>
+            </div>
+        </div>
+        <div class="surrogateParent1"></div>
+        <div class="surrogateParent2"></div>
+    </div>
+
+    //Selecting an element's direct parent:
+
+    //returns [div.child]
+    $("span.subchild").parent();
+
+    //Selecting all the parents of an element that match a given selector:
+
+    //returns [div.parent]
+    $("span.subchild").parents("div.parent");
+
+    //returns [div.child, div.parent, div.grandparent]
+    $("span.subchild").parents();
+
+    //Selecting all the parents of an element up to, but not including the selector:
+
+    //returns [div.child, div.parent]
+    $("span.subchild").parentsUntil("div.grandparent");
+
+    //Selecting the 
 
 
 
