@@ -760,6 +760,75 @@ As a getter, the `.css()` method is valuable. However, it should generally be av
 
     //Working with classes.
     var h1 = $("h1");
+    
+    h1.addClass("big");
+    h1.removeClass("big");
+    h1.toggleClass("big");
+
+    if(h1.hasClass("big")){
+        ...
+    }
+
+Classes can also be useful for storing state information about an element, such as indicating that an element is selected.
+
+
+###Dimensions
+jQuery offers a variety of methods for obtaining and modifying dimension and position information about an element.
+
+The code below shows a brief overview of the dimensions functionality in jQuery. For complete details about jQuery dimension methods, visit the **dimensions documentation on api.jquery.com**.
+
+    //Basic dimensions methods.
+
+    //Sets the width of all <h1> elements.
+    $("h1").width("50px");
+
+    //Gets the width of the first <h1> element.
+    $("h1").width();
+
+    //Sets the height of all <h1> elements.
+    $("h1").height("50px");
+
+    //Gets the height of the first <h1> element.
+    $("h1").height();
+
+    //Returns an object containing position information for the first <h1> relative to its "offset (positioned) parent".
+    $("h1").position();
+
+
+###Data Methods
+There's often data about an element you want to store with the element. In plain JavaScript, you might do this by adding a property to the DOM element, but you'd have to deal with memory leaks in some browsers. jQuery offers a straightforward way to store data related to an element, and it manages the memory issues for you.
+
+    //Storing and retrieving data related to an element.
+    $("#myDiv").data("keyName",{foo:"bar"});
+    $("#myDiv").data("keyName"); //Returns {foo:"bar"}
+
+Any kind of data can be stored on an element. For the purposes of this article, `.data()` will be used to store references to other elements.
+
+For example, you may want to establish a relationship between a list item and a `<div>` that's inside of it. This relationship could be established every single time the list item is touched, but a better solution would be to establish the relationship once, then store a pointer to the `<div>` on the list item using `.data()`:
+
+    //Storing a relationship between elements using .data()
+    $("#myList li").each(function(){
+        var li = $(this);
+        var div = li.find("div.content");
+
+        li.data("contentDiv", div);
+    });
+
+    //Later, we don't have to find the div again; we can just read it from the list item's data
+    var firstLi = $("#mylist li:first");
+    firstLi.data("contentDiv").html("new content");
+
+In addition to passing `.data()` a single key-value pair to store data, you can also pass an object containing one or more pairs.
+
+
+
+##Utility Methods
+
+jQuery offers several utility methods in the `$` namespace. These methods are helpful for accomplishing routine programming tasks. For a complete reference on jQuery utility methods, visit the **utilities documentation on api.jquery.com**.
+
+Below are examples of a few of the utility methods:
+
+
 
 
 
