@@ -828,10 +828,181 @@ jQuery offers several utility methods in the `$` namespace. These methods are he
 
 Below are examples of a few of the utility methods:
 
+`$.trim()`
+Removes leading and trailing whitespace:
+    
+    //Returns "not lots fo extra whitespace"
+    $.trim("      not lots of extra whitespace    ");
+
+`$.each()`
+Iterates over arrays and objects:
+
+    $.each(["foo","bar","baz"], function(idx,val){
+        console.log("element" + idx + " is " + val);
+    });
+
+    $.each({foo:"bar", baz:"bim"}, function(k,v){
+        console.log(k + " : " + v);
+    });
+
+The method `.each()` can be called on a selection to iterate over the elements contained in the selection. `.each()`, not `$.each()`, should be used for iterating over elements in a selection.
+
+`$.inArray()`
+Returns a value's index in an array, or -1 if the value is not in the array:
+
+    var myArray = [1,2,3,5];
+    if ($.inArray(4,myArray) !== -1){
+        console.log("found it!");
+    }
+
+`$.extend()`
+Changes the properties of the first object using the properties of subsequent objects:
+
+    var firstObject = {foo:"bar", a:"b"};
+    var secondObject = {foo:"baz"};
+
+    var newObject = $.extend(firstObject, secondObject);
+
+    console.log(firstObject.foo); //"baz"
+    console.log(newObject.foo); //"baz"
+
+If you don't want to change any of the objects you pass to `$.extend()`, pass an empty object as the first argument:
+
+    var firstObject = {foo:"bar", a:"b"};
+    var secondObject = {foo:"baz"};
+
+    var newObject = $.extend({}, firstObject, secondObject);
+
+    console.log(firstObject.foo); //"bar"
+    console.log(newObject.foo); //"baz"
+
+`$.proxy()`
+Returns a function that will always run in the provided scope -- that is, sets the meaning of `this` inside the passed function to the second argument.
+
+    var myFunction = function(){
+        console.log(this);
+    };
+    var myObject = {
+        foo: "bar"
+    };
+
+    myFunction(); //window
+
+    var myProxyFunction = $.proxy(myFunction, myObject);
+    myProxyFunction(); //myObject
+
+If you have an object with methods, you can pass the object and the name of a method to return a function that will always run in the scope of the object.
+
+    var myObject = {
+        myFn: function(){
+            console.log(this);
+        }
+    };
+
+    $("#foo").click(myObject.myFn); //HTMLElement #foo
+    $("#foo").click($.proxy(myObject, "myFn")); //myObject
+
+
+###Testing Type
+Sometimes the `typeof` operator **can be confusing or inconsistent**, so instead of using `typeof`, jQuery offers utility methods to help determine the type of a value.
+    
+    $.isArray([]);  //true
+    $.isFunction(function(){});  //true
+    $.isNumeric(3.14);  //true
+
+Additionally, there is `$.type()` which checks for the internal class used to create a value. You can see the method as a better alternative for the `typeof` operator.
+
+    $.type(true);  //"boolean"
+    $.type(3);  //"number"
+    $.type("test");  //"string"
+    $.type(function(){});  //"function"
+
+    $.type(new Boolean());  //"boolean"
+    $.type(new Number(3));  //"number"
+    $.type(new String("test"));  //"string"
+    $.type(new Function());  //"function"
+
+    $.type([]);  //"array"
+    $.type(null);  //"null"
+    $.type(/test/);  //"regexp"
+    $.type(new Date());  //"date"
+
+As always, you can check the API docs for a more in-depth explanation. 
 
 
 
+##Iterating over jQuery and non-jQuery Objects
 
+jQuery provides an object iterator utility called `$.each()` as well as a jQuery collection iterator: `.each()`. These are not interchangeable. In addition, there are a couple of helpful methods called `$.map()` and `.map()` that can shortcut one of our common iteration use cases.
+
+`$.each()`
+`$.each()` is a generic iterator function for looping over object, arrays, and array-like objects. Plain objects are iterated via their named properties while arrays and array-like objects are iterated via their indices.
+`$.each()` is essentially a drop-in replacement of a traditional `for` or `for-in` loop. Given:
+
+    var sum = 0;
+    var arr = [1,2,3,4,5];
+
+Then this:
+
+    for (var i=0, l = arr.length; i<l; i++){
+        sum += arr[i];
+    }
+    console.log(sum);  //15
+
+Can be replaced with this:
+
+    $.each(arr, function(index,value){
+        sum += value;
+    });
+    console.log(sum);  //15
+
+Notice that we don't have to access `arr[index]` as the value is conveniently passed to the callback in `$.each()`.
+
+In addition, given:
+
+    var sum = 0;
+    var obj = {
+        foo:1,
+        var:2
+    }
+
+Then this:
+
+    for(var item in obj){
+        sum += obj[item];
+    }
+    console.log(sum); 
+
+Can be replaced with this:
+    
+    $.each(obj, function(key, value){
+        sum += value;
+    });
+    console.log(sum);
+
+Again, we don't have to directly access `obj[key]` as the value is passed directly to the callback.
+
+Note that `$.each()` is for plain objects, arrays, array-like objects *that are not jQuery collections*.
+
+This would be considered incorrect:
+
+    //Incorrect:
+    $.each($("p"), function(){
+        //Do something
+    });
+
+
+
+For jQuery collections, use `.each()`.
+
+`.each()`
+
+`.each()` is used directly on a jQuery collection. It iterates over each matched element in the collection and performs a callback on that object. The index of the current element within the collection is passed as an argument to the callback. The value (the DOM element in this case) is also passed, but the callback is fired within the context of the current matched element so the  `this` keyword points to the current element as expected in other jQuery callbacks.
+
+For example, given the following markup:
+
+    <ul>
+        <li><a href="#">link 1
 
 
 
