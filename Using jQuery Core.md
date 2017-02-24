@@ -395,7 +395,7 @@ Changing things about elements is trivial, but remember that the change will aff
 
 ###Moving, Copying, and Removing Elements
 While there are a variety of ways to move elements around the DOM, there are generally two approaches:
-    
+
 1. Place the selected element(s) relative to another element.
 2. Place an element relative to the selected element(s).
 
@@ -760,7 +760,7 @@ As a getter, the `.css()` method is valuable. However, it should generally be av
 
     //Working with classes.
     var h1 = $("h1");
-    
+
     h1.addClass("big");
     h1.removeClass("big");
     h1.toggleClass("big");
@@ -830,7 +830,7 @@ Below are examples of a few of the utility methods:
 
 `$.trim()`
 Removes leading and trailing whitespace:
-    
+
     //Returns "not lots fo extra whitespace"
     $.trim("      not lots of extra whitespace    ");
 
@@ -905,7 +905,7 @@ If you have an object with methods, you can pass the object and the name of a me
 
 ###Testing Type
 Sometimes the `typeof` operator **can be confusing or inconsistent**, so instead of using `typeof`, jQuery offers utility methods to help determine the type of a value.
-    
+
     $.isArray([]);  //true
     $.isFunction(function(){});  //true
     $.isNumeric(3.14);  //true
@@ -971,10 +971,10 @@ Then this:
     for(var item in obj){
         sum += obj[item];
     }
-    console.log(sum); 
+    console.log(sum);
 
 Can be replaced with this:
-    
+
     $.each(obj, function(key, value){
         sum += value;
     });
@@ -1013,5 +1013,3 @@ For example, given the following markup:
 
 
 
-
- 
